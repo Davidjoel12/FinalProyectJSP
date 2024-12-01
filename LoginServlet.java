@@ -1,3 +1,5 @@
+<!--Importante crear una carpeta dentro de Source Packages luego crear un archivo de nombre JAVA para manejar nuestros códigos y por ultimo crear un Servlet y agregar este código -->
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
