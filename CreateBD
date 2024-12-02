@@ -150,6 +150,23 @@ VALUES
 ('Alquiler de Bicicletas', 'Alquiler de bicicletas para explorar los alrededores.', 10.00);
 
 -- ===========================
+-- Insertar Huespedes
+-- ===========================
+INSERT INTO dbo.Huespedes (nombre, apellido, correo, telefono, fecha_registro)
+VALUES
+('Juan', 'Perez', 'juan.perez@example.com', '1234567890', GETDATE()),
+('Maria', 'Lopez', 'maria.lopez@example.com', '0987654321', GETDATE()),
+('Carlos', 'Garcia', 'carlos.garcia@example.com', '1122334455', GETDATE()),
+('Ana', 'Martinez', 'ana.martinez@example.com', '5566778899', GETDATE()),
+('Luis', 'Rodriguez', 'luis.rodriguez@example.com', '6677889900', GETDATE()),
+('Laura', 'Hernandez', 'laura.hernandez@example.com', '7788990011', GETDATE()),
+('Miguel', 'Torres', 'miguel.torres@example.com', '8899001122', GETDATE()),
+('Sofia', 'Gomez', 'sofia.gomez@example.com', '9900112233', GETDATE()),
+('Diego', 'Jimenez', 'diego.jimenez@example.com', '1011121314', GETDATE()),
+('Lucia', 'Diaz', 'lucia.diaz@example.com', '1213141516', GETDATE());
+
+
+-- ===========================
 -- CÓDIGOS PARA VERIFICAR
 -- ===========================
 -- Verificar Roles
