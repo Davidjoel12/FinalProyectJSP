@@ -1,10 +1,10 @@
+<%@page import="JAVA.Huesped"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.sql.*, java.util.*" %>
+<%@page import="java.util.*, JAVA.Huesped" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clientes Hospedados</title>
     <style>
         body {
@@ -129,30 +129,36 @@
           background-color: #34495e;
         }
     </style>
-
 </head>
 <body>
-    
     <div class="wrapper">
         <!-- Sidebar -->
         <aside class="sidebar">
-          <div class="logo">
-            <span class="icon">🏨</span>
-            <span>HOTEL</span>
-          </div>
-          <nav class="menu">
-            <ul>
-              <li><a href="index.jsp" >Recepción</a></li>
-              <li><a href="login.jsp">Salida</a></li>
-              <li><a href="clientesHospedados.jsp" class="active">Clientes</a></li>
-              <li><a href="#">Reportes</a></li>
-            </ul>
-          </nav>
+            <div class="logo">
+                <span class="icon">🏨</span>
+                <span>HOTEL</span>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="index.jsp">Recepción</a></li>
+                    <li><a href="login.jsp">Salida</a></li>
+                    <li><a href="clientesHospedados.jsp">Clientes</a></li>
+                    <li><a href="#">Reportes</a></li>
+                </ul>
+            </nav>
         </aside>
-
-
         <div class="container">
             <h1>Clientes Hospedados</h1>
+
+            <% 
+                String error = (String) request.getAttribute("error");
+                if (error != null) { 
+            %>
+                <div style="color: red;"><%= error %></div>
+            <% 
+                } 
+            %>
+
             <table>
                 <thead>
                     <tr>
@@ -166,8 +172,30 @@
                     </tr>
                 </thead>
                 <tbody>
-
-
+                    <%
+                        List<Huesped> huespedes = (List<Huesped>) request.getAttribute("huespedes");
+                        if (huespedes != null && !huespedes.isEmpty()) {
+                            for (Huesped huesped : huespedes) {
+                    %>
+                    <tr>
+                        <td><%= huesped.getId() %></td>
+                        <td><%= huesped.getNombre() %></td>
+                        <td><%= huesped.getApellido() %></td>
+                        <td><%= huesped.getNumeroHabitacion() %></td>
+                        <td><%= huesped.getTipo() %></td>
+                        <td><%= huesped.getFechaRegistro() %></td>
+                        <td><%= huesped.getPrecio() %></td>
+                    </tr>
+                    <%
+                            }
+                        } else {
+                    %>
+                    <tr>
+                        <td colspan="7">No se encontraron huéspedes.</td>
+                    </tr>
+                    <%
+                        }
+                    %>
                 </tbody>
             </table>
             <a href="index.jsp" class="back-button">Volver al Inicio</a>
