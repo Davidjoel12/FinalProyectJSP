@@ -1,0 +1,165 @@
+-- ===========================
+-- CREACIÓN DE LA BASE DE DATOS
+-- ===========================
+CREATE DATABASE GestionHospedaje;
+USE GestionHospedaje;
+
+-- ===========================
+-- CREACIÓN DE TABLAS
+-- ===========================
+
+-- Tabla de Roles
+CREATE TABLE Roles (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre NVARCHAR(50) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX)
+);
+
+-- Tabla de Personal del Hotel
+CREATE TABLE Personal (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre NVARCHAR(100) NOT NULL,
+    apellido NVARCHAR(100) NOT NULL,
+    correo NVARCHAR(100) UNIQUE NOT NULL,
+    telefono NVARCHAR(15),
+    rol_id INT NOT NULL,
+    contraseña NVARCHAR(255) NOT NULL,
+    FOREIGN KEY (rol_id) REFERENCES Roles(id)
+);
+
+-- Tabla de Huéspedes
+CREATE TABLE Huespedes (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre NVARCHAR(100) NOT NULL,
+    apellido NVARCHAR(100) NOT NULL,
+    correo NVARCHAR(100) UNIQUE,
+    telefono NVARCHAR(15),
+    fecha_registro DATETIME DEFAULT GETDATE()
+);
+
+-- Tabla de Habitaciones
+CREATE TABLE Habitaciones (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    numero_habitacion NVARCHAR(10) NOT NULL UNIQUE,
+    tipo NVARCHAR(50) NOT NULL, -- Ejemplo: "Individual", "Doble", "Suite"
+    precio DECIMAL(10, 2) NOT NULL,
+    estado NVARCHAR(20) DEFAULT 'Disponible', -- Valores: Disponible, Ocupada, Mantenimiento
+    descripcion NVARCHAR(MAX)
+);
+
+-- Tabla de Servicios Adicionales
+CREATE TABLE Servicios (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre NVARCHAR(100) NOT NULL,
+    descripcion NVARCHAR(MAX),
+    precio DECIMAL(10, 2) NOT NULL
+);
+
+-- Tabla de Reservas
+CREATE TABLE Reservas (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    huesped_id INT NOT NULL,
+    habitacion_id INT NOT NULL,
+    fecha_entrada DATE NOT NULL,
+    fecha_salida DATE NOT NULL,
+    estado NVARCHAR(20) DEFAULT 'Confirmada', -- Valores: Confirmada, Cancelada, Finalizada
+    FOREIGN KEY (huesped_id) REFERENCES Huespedes(id),
+    FOREIGN KEY (habitacion_id) REFERENCES Habitaciones(id)
+);
+
+-- Tabla de Servicios Usados
+CREATE TABLE Servicios_Usados (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    reserva_id INT NOT NULL,
+    servicio_id INT NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (reserva_id) REFERENCES Reservas(id),
+    FOREIGN KEY (servicio_id) REFERENCES Servicios(id)
+);
+
+-- Restricción para el estado de Habitaciones
+ALTER TABLE Habitaciones
+ADD CONSTRAINT chk_estado_habitaciones
+CHECK (estado IN ('Disponible', 'Ocupada', 'Mantenimiento'));
+
+-- Restricción para el estado de Reservas
+ALTER TABLE Reservas
+ADD CONSTRAINT chk_estado_reservas
+CHECK (estado IN ('Confirmada', 'Cancelada', 'Finalizada'));
+
+-- ===========================
+-- INSERTAR LOS ROLES
+-- ===========================
+INSERT INTO Roles (nombre, descripcion)
+VALUES 
+('Administrador', 'Rol con acceso completo a todas las funcionalidades del sistema'),
+('Empleado Cocina', 'Encargado de la preparación y gestión de alimentos.'),
+('Empleado Limpieza', 'Responsable de la limpieza y el mantenimiento de las habitaciones.'),
+('Recepcionista', 'Encargado de registrar a los huéspedes, asignar habitaciones y gestionar pagos.');
+
+-- ===========================
+-- INSERTAR AL PERSONAL
+-- ===========================
+-- Crear usuario administrador
+DECLARE @adminRolId INT;
+SET @adminRolId = (SELECT TOP 1 id FROM Roles WHERE nombre = 'Administrador');
+INSERT INTO Personal (nombre, apellido, correo, telefono, rol_id, contraseña)
+VALUES ('Admin', 'Principal', 'admin@hotel.com', '123456789', @adminRolId, HASHBYTES('SHA2_256', '1234'));
+
+-- Insertar empleados ficticios para cada rol
+DECLARE @idRolCocina INT, @idRolLimpieza INT, @idRolRecepcionista INT;
+SET @idRolCocina = (SELECT id FROM Roles WHERE nombre = 'Empleado Cocina');
+SET @idRolLimpieza = (SELECT id FROM Roles WHERE nombre = 'Empleado Limpieza');
+SET @idRolRecepcionista = (SELECT id FROM Roles WHERE nombre = 'Recepcionista');
+
+INSERT INTO Personal (nombre, apellido, correo, telefono, rol_id, contraseña) VALUES
+('Carlos', 'Gómez', 'carlos.cocina@hotel.com', '555123111', @idRolCocina, HASHBYTES('SHA2_256', 'cocina123')),
+('María', 'López', 'maria.limpieza@hotel.com', '555456222', @idRolLimpieza, HASHBYTES('SHA2_256', 'limpieza123')),
+('Sofía', 'Ramírez', 'sofia.recepcionista@hotel.com', '555789333', @idRolRecepcionista, HASHBYTES('SHA2_256', 'recepcion123'));
+
+-- ===========================
+-- INSERTAR HABITACIONES
+-- ===========================
+INSERT INTO Habitaciones (numero_habitacion, tipo, precio, estado, descripcion)
+VALUES 
+('101', 'Individual', 50.00, 'Disponible', 'Habitación individual con cama sencilla.'),
+('102', 'Individual', 50.00, 'Disponible', 'Habitación individual con cama sencilla y vista al jardín.'),
+('201', 'Doble', 75.00, 'Disponible', 'Habitación doble con dos camas individuales.'),
+('202', 'Doble', 80.00, 'Disponible', 'Habitación doble con dos camas individuales y balcón.'),
+('301', 'Matrimonial', 100.00, 'Disponible', 'Habitación con cama matrimonial y baño privado.'),
+('302', 'Matrimonial', 110.00, 'Disponible', 'Habitación matrimonial con cama king-size y vista al mar.'),
+('401', 'Suite', 150.00, 'Disponible', 'Suite con sala de estar, cama king-size y jacuzzi.'),
+('402', 'Suite', 160.00, 'Disponible', 'Suite premium con cocina, cama king-size y terraza privada.'),
+('501', 'Familiar', 120.00, 'Disponible', 'Habitación familiar con una cama matrimonial y dos camas individuales.'),
+('502', 'Familiar', 130.00, 'Disponible', 'Habitación familiar con dos camas matrimoniales y espacio extra.');
+
+-- ===========================
+-- INSERTAR SERVICIOS
+-- ===========================
+INSERT INTO Servicios (nombre, descripcion, precio)
+VALUES
+('Desayuno Buffet', 'Acceso al desayuno buffet con opciones internacionales.', 15.00),
+('Spa y Masajes', 'Sesión de spa con masajes relajantes y terapéuticos.', 50.00),
+('Servicio a la Habitación', 'Entrega de alimentos y bebidas directamente en la habitación.', 10.00),
+('Excursión Turística', 'Tour guiado por los principales atractivos turísticos de la zona.', 30.00),
+('Transporte al Aeropuerto', 'Servicio de traslado al aeropuerto en vehículo privado.', 25.00),
+('Wi-Fi Premium', 'Conexión a internet de alta velocidad en toda la propiedad.', 5.00),
+('Lavandería', 'Servicio de lavado, secado y planchado de ropa.', 20.00),
+('Cena Romántica', 'Cena para dos personas con menú exclusivo y decoración especial.', 70.00),
+('Clases de Yoga', 'Sesión de yoga grupal en un ambiente relajante.', 15.00),
+('Alquiler de Bicicletas', 'Alquiler de bicicletas para explorar los alrededores.', 10.00);
+
+-- ===========================
+-- CÓDIGOS PARA VERIFICAR
+-- ===========================
+-- Verificar Roles
+SELECT * FROM Roles;
+
+-- Verificar Personal
+SELECT * FROM Personal;
+
+-- Verificar Habitaciones
+SELECT * FROM Habitaciones WHERE estado = 'Disponible';
+
+-- Verificar Servicios
+SELECT * FROM Servicios;
