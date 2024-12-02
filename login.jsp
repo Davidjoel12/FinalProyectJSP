@@ -9,7 +9,7 @@
 </head>
 <body>
     <style>
-       /* General Styles */
+        /* General Styles */
         body {
           margin: 0;
           padding: 0;
@@ -85,27 +85,27 @@
           margin-bottom: 15px;
           font-size: 14px;
         }
-
     </style>
-  <div class="login-container">
-    <form action="LoginServlet" method="post" class="login-form">
-      <h2>Iniciar Sesión</h2>
-      <div class="input-group">
-        <label for="username">Usuario</label>
-        <input type="text" id="username" name="username" required>
-      </div>
-      <div class="input-group">
-        <label for="password">Contraseña</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-      <%
-          String errorMessage = request.getParameter("error");
-          if (errorMessage != null) {
-      %>
-          <div class="error-message"><%= errorMessage %></div>
-      <% } %>
-      <button type="submit">Entrar</button>
-    </form>
-  </div>
+    <div class="login-container">
+        <form action="LoginServlet" method="post" class="login-form">
+            <h2>Iniciar Sesión</h2>
+            <div class="input-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <!-- Mostrar mensaje de error si existe -->
+            <%
+                String errorMessage = request.getParameter("error");
+                if (errorMessage != null) {
+            %>
+                <div class="error-message"><%= errorMessage %></div>
+            <% } %>
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
 </body>
 </html>
