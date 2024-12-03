@@ -1,18 +1,16 @@
-<!--Importante crear una carpeta dentro de Source Packages luego crear un archivo de nombre JAVA para manejar nuestros códigos y por ultimo crear un Servlet y agregar este código -->
+package JAVA;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-
-@WebServlet("/LoginServlet")
+@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -23,7 +21,6 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         // Conexión a la base de datos
-        
         Connection con = null;
 
         try {
@@ -33,19 +30,23 @@ public class LoginServlet extends HttpServlet {
                 String sql = "SELECT * FROM Personal WHERE nombre = ? AND contraseña = ?";
                 PreparedStatement ps = con.prepareStatement(sql);
                 ps.setString(1, username);
-                ps.setString(2, password);
+                ps.setString(2, password); // No es necesario encriptar la contraseña
 
+                // Imprimir la consulta para depuración
                 System.out.println("Ejecutando consulta: " + sql);
 
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
+                    // Usuario autenticado
                     System.out.println("Usuario autenticado: " + username);
-                    response.sendRedirect("index.jsp");
+                    response.sendRedirect("index.jsp"); // Redirige a la página principal
                 } else {
+                    // Usuario o contraseña incorrectos
                     System.out.println("Credenciales incorrectas para usuario: " + username);
                     response.sendRedirect("login.jsp?error=Usuario o contraseña incorrectos");
                 }
             } else {
+                // Error al conectar a la base de datos
                 System.err.println("No se pudo establecer conexión a la base de datos.");
                 response.sendRedirect("login.jsp?error=Error al conectar con la base de datos");
             }
@@ -63,4 +64,3 @@ public class LoginServlet extends HttpServlet {
         }
     }
 }
-
