@@ -180,3 +180,28 @@ SELECT * FROM Habitaciones WHERE estado = 'Disponible';
 
 -- Verificar Servicios
 SELECT * FROM Servicios;
+
+
+-- ===========================
+-- UPDATE DE PERSONAL Y PERMISOS
+-- ===========================
+
+UPDATE Personal
+SET nombre = 'Juan', contraseña = 'Juan123'
+WHERE nombre = 'Sofía';
+
+UPDATE Personal
+SET contraseña = 'Carlos123'
+WHERE nombre = 'Carlos';
+
+UPDATE Personal
+SET contraseña = 'María123'
+WHERE nombre = 'María';
+
+UPDATE Personal
+SET contraseña = 'Admin123'
+WHERE nombre = 'Admin';
+
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON DATABASE::GestionHospedaje TO PUBLIC;
+
