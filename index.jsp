@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,6 +161,10 @@
         .create-reservation {
           background: #e0f7fa;
         }
+        
+        .update-reservation {
+          background: #F6D8AE;
+        }
 
         .occupied {
           background: #ffcdd2;
@@ -184,12 +189,9 @@
       </div>
       <nav class="menu">
         <ul>
-          <li><a href="#" class="active">Recepción</a></li>
-          <li><a href="#">Salida</a></li>
-          <li><a href="#">Caja</a></li>
-          <li><a href="#">Punto de venta</a></li>
-          <li><a href="#">Configuración</a></li>
-          <li><a href="#">Clientes</a></li>
+          <li><a href="index.jsp" class="active">Recepción</a></li>
+          <li><a href="login.jsp">Salida</a></li>
+          <li><a href="clientesHospedados.jsp">Clientes</a></li>
           <li><a href="#">Reportes</a></li>
         </ul>
       </nav>
@@ -213,9 +215,13 @@
         </div>
       </div>
       <div class="card-container">
-        <div class="card create-reservation">
+        <div class="card create-reservation" onclick="window.location.href='crearReserva.jsp';">
+            <span class="icon">➕</span>
+            <p>Crear reservación</p>
+        </div>
+        <div class="card update-reservation" onclick="window.location.href='actualizar.jsp';">
           <span class="icon">➕</span>
-          <p>Crear reservación</p>
+          <p>Actualizar reservación</p>
         </div>
         <div class="card occupied">
           <span class="icon">🛌</span>
