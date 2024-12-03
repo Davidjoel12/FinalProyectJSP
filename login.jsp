@@ -87,7 +87,7 @@
         }
     </style>
     <div class="login-container">
-        <form action="LoginServlet" method="post" class="login-form">
+        <form action="LoginServlet" method="POST" class="login-form">
             <h2>Iniciar Sesión</h2>
             <div class="input-group">
                 <label for="username">Usuario</label>
