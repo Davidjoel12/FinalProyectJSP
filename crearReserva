@@ -145,9 +145,9 @@
             <nav class="menu">
                 <ul>
                     <li><a href="index.jsp">Recepción</a></li>
-                    <li><a href="login.jsp">Salida</a></li>
                     <li><a href="clientesHospedados.jsp">Clientes</a></li>
                     <li><a href="#">Reportes</a></li>
+                    <li><a href="login.jsp">Salida</a></li>
                 </ul>
             </nav>
         </aside>
