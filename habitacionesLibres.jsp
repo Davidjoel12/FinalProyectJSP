@@ -1,9 +1,3 @@
-<%-- 
-    Document   : habitacionesLibres
-    Created on : 3 dic 2024, 14:27:45
-    Author     : Admin
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List" %>
@@ -131,10 +125,6 @@
             transition: background-color 0.3s ease;
         }
 
-        .menu a.active,
-        .menu a:hover {
-            background-color: #34495e;
-        }
     </style>
 </head>
 <body>
@@ -147,9 +137,9 @@
             <nav class="menu">
                 <ul>
                     <li><a href="index.jsp">Recepción</a></li>
-                    <li><a href="login.jsp">Salida</a></li>
                     <li><a href="clientesHospedados.jsp">Clientes</a></li>
                     <li><a href="#">Reportes</a></li>
+                    <li><a href="login.jsp">Salida</a></li>
                 </ul>
             </nav>
         </aside>
