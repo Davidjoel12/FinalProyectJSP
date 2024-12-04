@@ -1,14 +1,15 @@
 package JAVA;
 
+import static JAVA.Conexion.getConnection;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
@@ -24,8 +25,7 @@ public class LoginServlet extends HttpServlet {
         Connection con = null;
 
         try {
-            Conexion conexion = new Conexion();
-            con = conexion.getConexion();
+            con = getConnection();
             if (con != null) {
                 String sql = "SELECT * FROM Personal WHERE nombre = ? AND contraseña = ?";
                 PreparedStatement ps = con.prepareStatement(sql);
