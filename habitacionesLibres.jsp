@@ -1,3 +1,9 @@
+<%-- 
+    Document   : habitacionesLibres
+    Created on : 3 dic 2024, 14:27:45
+    Author     : Admin
+--%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List" %>
@@ -125,6 +131,10 @@
             transition: background-color 0.3s ease;
         }
 
+        .menu a.active,
+        .menu a:hover {
+            background-color: #34495e;
+        }
     </style>
 </head>
 <body>
@@ -137,9 +147,9 @@
             <nav class="menu">
                 <ul>
                     <li><a href="index.jsp">Recepción</a></li>
+                    <li><a href="login.jsp">Salida</a></li>
                     <li><a href="clientesHospedados.jsp">Clientes</a></li>
                     <li><a href="#">Reportes</a></li>
-                    <li><a href="login.jsp">Salida</a></li>
                 </ul>
             </nav>
         </aside>
@@ -165,33 +175,45 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <%
-                        try {
-                            List<Habitacion> habitaciones = (List<Habitacion>) request.getAttribute("habitacionesLibres");
-                            if (habitaciones != null && !habitaciones.isEmpty()) {
-                                for (Habitacion habitacion : habitaciones) {
-                    %>
-                    <tr>
-                        <td><%= habitacion.getNumeroHabitacion() %></td>
-                        <td><%= habitacion.getTipo() %></td>
-                        <td><%= habitacion.getDescripcion() %></td>
-                        <td><%= habitacion.getPrecio() %></td>
-                    </tr>
-
-                    <%
+                        <%
+                            try {
+                                List<Habitacion> habitaciones = (List<Habitacion>) request.getAttribute("habitacionesLibres");
+                                if (habitaciones != null && !habitaciones.isEmpty()) {
+                                    for (Habitacion habitacion : habitaciones) {
+                        %>
+                        <tr>
+                            <td><%= habitacion.getNumeroHabitacion() %></td>
+                            <td><%= habitacion.getTipo() %></td>
+                            <td><%= habitacion.getDescripcion() %></td>
+                            <td>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-weight: bold; color: #2F4858;"><%= habitacion.getPrecio() %></span>
+                                    
+                                    
+                                    <form action="AgregarReservaServlet" method="post" style="margin-top: 5px;">
+                                        <input type="hidden" name="numeroHabitacion" value="<%= habitacion.getNumeroHabitacion() %>">
+                                        <button type="submit" style="background-color: #2F4858; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+                                            Agregar Reserva
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <%
+                                    }
+                                } else {
+                        %>
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No se encontraron habitaciones libres.</td>
+                        </tr>
+                        <%
                                 }
-                            } else {
-                    %>
-                    <tr>
-                        <td colspan="4">No se encontraron habitaciones libres.</td>
-                    </tr>
-                    <%
+                            } catch (Exception e) {
+                                out.println("<tr><td colspan='5' style='color: red;'>Error al procesar datos: " + e.getMessage() + "</td></tr>");
                             }
-                        } catch (Exception e) {
-                            out.println("<tr><td colspan='4' style='color: red;'>Error al procesar datos: " + e.getMessage() + "</td></tr>");
-                        }
-                    %>
-                </tbody>
+                        %>
+                    </tbody>
+
             </table>
             <a href="index.jsp" class="back-button">Volver al Inicio</a>
         </div>
