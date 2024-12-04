@@ -190,9 +190,9 @@
       <nav class="menu">
         <ul>
           <li><a href="index.jsp" class="active">Recepción</a></li>
-          <li><a href="login.jsp">Salida</a></li>
           <li><a href="clientesHospedados.jsp">Clientes</a></li>
           <li><a href="#">Reportes</a></li>
+          <li><a href="login.jsp">Salida</a></li>
         </ul>
       </nav>
     </aside>
@@ -202,7 +202,7 @@
       <h1 class="title">Entrada de hospedamiento</h1>
       <div class="status-counters">
         <div class="status">
-          <span class="status-label">En limpieza</span>
+          <span class="status-label">Personal</span>
           <span class="status-count">1</span>
         </div>
         <div class="status">
@@ -215,37 +215,25 @@
         </div>
       </div>
       <div class="card-container">
-        <div class="card create-reservation" onclick="window.location.href='crearReserva.jsp';">
-            <span class="icon">➕</span>
-            <p>Crear reservación</p>
-        </div>
-        <div class="card update-reservation" onclick="window.location.href='actualizar.jsp';">
+        <div class="card update-reservation" onclick="window.location.href='personal.jsp';">
           <span class="icon">➕</span>
-          <p>Actualizar reservación</p>
+          <p>Personal</p>
         </div>
-        <div class="card occupied">
+        <div class="card occupied" onclick="window.location.href='HabitacionesOcupadasServlet';">
           <span class="icon">🛌</span>
           <p>Ocupado</p>
         </div>
-        <div class="card free">
+        <div class="card free" onclick="window.location.href='HabitacionesLibresServlet';">
           <span class="icon">🛏️</span>
           <p>Libre</p>
         </div>
         <div class="card cleaning">
           <span class="icon">🧹</span>
-          <p>Limpieza</p>
+          <p>Servicios</p>
         </div>
       </div>
     </main>
   </div>
     
-    <script>
-        document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', () => {
-          const status = card.querySelector('p').textContent;
-          alert(`Has seleccionado: ${status}`);
-        });
-      });
-    </script>
 </body>
 </html>
