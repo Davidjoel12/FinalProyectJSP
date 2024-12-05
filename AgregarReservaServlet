@@ -1,0 +1,83 @@
+package JAVA;
+
+import JAVA.Conexion;
+
+import java.sql.Connection;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.*;
+
+@WebServlet(name = "AgregarReservaServlet", urlPatterns = {"/AgregarReservaServlet"})
+public class AgregarReservaServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        Connection con = null;
+
+        try {
+            con = Conexion.getConnection();
+            if (con == null) {
+                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+            }
+            System.out.println("Conexión establecida.");
+
+            // Obtener parámetros del formulario
+            String nombre = request.getParameter("nombre");
+            String apellido = request.getParameter("apellido");
+            String correo = request.getParameter("correo");
+            String telefono = request.getParameter("telefono");
+            String fechaEntradaStr = request.getParameter("fechaEntrada");
+            String fechaSalidaStr = request.getParameter("fechaSalida");
+            String numeroHabitacionStr = request.getParameter("numeroHabitacion");
+
+            // Validaciones básicas
+            if (nombre == null || apellido == null || fechaEntradaStr == null || fechaSalidaStr == null || numeroHabitacionStr == null) {
+                throw new IllegalArgumentException("Todos los campos obligatorios deben estar llenos.");
+            }
+
+            System.out.println("Parámetros recibidos: " + nombre + ", " + apellido + ", " + correo + ", " + telefono + ", " + fechaEntradaStr + ", " + fechaSalidaStr + ", " + numeroHabitacionStr);
+
+            Date fechaEntrada = Date.valueOf(fechaEntradaStr);
+            Date fechaSalida = Date.valueOf(fechaSalidaStr);
+
+            // Llamar al procedimiento almacenado
+            String callProcedure = "{CALL AgregarHuespedYReserva(?, ?, ?, ?, ?, ?, ?)}";
+            try (CallableStatement stmt = con.prepareCall(callProcedure)) {
+                stmt.setString(1, nombre);
+                stmt.setString(2, apellido);
+                stmt.setString(3, correo);
+                stmt.setString(4, telefono);
+                stmt.setString(5, numeroHabitacionStr);
+                stmt.setDate(6, fechaEntrada);
+                stmt.setDate(7, fechaSalida);
+
+                // Ejecutar el procedimiento
+                stmt.execute();
+                System.out.println("Procedimiento almacenado ejecutado correctamente.");
+            }
+
+            // Redirigir al usuario a una página de éxito
+            response.sendRedirect("index.jsp");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error al registrar la reservación: " + e.getMessage());
+            request.getRequestDispatcher("agregarReserva.jsp").forward(request, response);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                    System.out.println("Conexión cerrada correctamente.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
