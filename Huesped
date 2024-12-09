@@ -1,6 +1,6 @@
 package JAVA;
 
-import java.math.BigDecimal;
+
 import java.sql.Timestamp;
 
 public class Huesped {
@@ -10,7 +10,7 @@ public class Huesped {
     private String numeroHabitacion;
     private String tipo;
     private Timestamp fechaRegistro;
-    private BigDecimal precio;
+   
 
     // Getters y setters
     public int getId() {
@@ -49,10 +49,5 @@ public class Huesped {
     public void setFechaRegistro(Timestamp fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-    public BigDecimal getPrecio() {
-        return precio;
-    }
-    public void setPrecio(BigDecimal precio) {
-        this.precio = precio;
-    }
+   
 }
