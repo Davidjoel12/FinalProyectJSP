@@ -205,3 +205,19 @@ WHERE nombre = 'Admin';
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON DATABASE::GestionHospedaje TO PUBLIC;
 
+-===============================================-
+   -- Insertar datos en la tabla Reservas
+INSERT INTO Reservas (huesped_id, habitacion_id, fecha_entrada, fecha_salida, estado)
+VALUES
+(1, 1, '2024-12-10', '2024-12-15', 'Confirmada'),
+(2, 3, '2024-12-12', '2024-12-17', 'Confirmada'),
+(3, 5, '2024-12-14', '2024-12-20', 'Confirmada'),
+(4, 7, '2024-12-16', '2024-12-22', 'Confirmada'),
+(5, 9, '2024-12-18', '2024-12-24', 'Confirmada');
+
+-===============================================-
+-- Actualizar el estado de las habitaciones a "Ocupada"
+UPDATE Habitaciones
+SET estado = 'Ocupada'
+WHERE numero_habitacion IN (101, 201, 301, 401, 501);
+
