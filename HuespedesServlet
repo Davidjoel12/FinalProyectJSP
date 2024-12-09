@@ -1,5 +1,6 @@
 package JAVA;
 
+import static JAVA.Conexion.getConnection;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class HuespedesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Huesped> huespedes = new ArrayList<>();
-        String query = "SELECT h.id, h.nombre, h.apellido, hb.numero_habitacion, hb.tipo, h.fecha_registro, hb.precio " +
+        String query = "SELECT h.id, h.nombre, h.apellido, hb.numero_habitacion, hb.tipo, h.fecha_registro " +
                        "FROM dbo.Huespedes h " +
                        "JOIN dbo.Habitaciones hb ON h.id = hb.id";
 
@@ -26,8 +27,8 @@ public class HuespedesServlet extends HttpServlet {
 
         try {
             // Usar tu clase Conexion para obtener la conexión
-            Conexion conexion = new Conexion();
-            conn = conexion.getConexion();
+            
+            conn = getConnection();
 
             if (conn != null) {
                 stmt = conn.prepareStatement(query);
@@ -42,7 +43,7 @@ public class HuespedesServlet extends HttpServlet {
                     huesped.setNumeroHabitacion(rs.getString("numero_habitacion"));
                     huesped.setTipo(rs.getString("tipo"));
                     huesped.setFechaRegistro(rs.getTimestamp("fecha_registro"));
-                    huesped.setPrecio(rs.getBigDecimal("precio"));
+                    
 
                     huespedes.add(huesped);
                 }
