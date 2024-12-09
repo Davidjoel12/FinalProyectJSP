@@ -167,7 +167,7 @@
                         <th>Habitación</th>
                         <th>Categoría</th>
                         <th>Fecha Hospedaje</th>
-                        <th>Precio</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -183,7 +183,7 @@
                         <td><%= huesped.getNumeroHabitacion() %></td>
                         <td><%= huesped.getTipo() %></td>
                         <td><%= huesped.getFechaRegistro() %></td>
-                        <td><%= huesped.getPrecio() %></td>
+                        
                     </tr>
                     <%
                             }
