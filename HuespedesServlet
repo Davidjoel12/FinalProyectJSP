@@ -17,16 +17,17 @@ public class HuespedesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Huesped> huespedes = new ArrayList<>();
-        String query = "SELECT h.id, h.nombre, h.apellido, hb.numero_habitacion, hb.tipo, h.fecha_registro " +
-                       "FROM dbo.Huespedes h " +
-                       "JOIN dbo.Habitaciones hb ON h.id = hb.id";
+        String query = "SELECT Huespedes.id, Huespedes.nombre, Huespedes.apellido, Habitaciones.numero_habitacion, Habitaciones.tipo, Huespedes.fecha_registro " +
+                       "FROM dbo.Huespedes " +
+                       "JOIN dbo.Habitaciones ON Huespedes.id = Habitaciones.id " + 
+                       "Where Habitaciones.estado = 'Ocupada';";
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
-            // Usar tu clase Conexion para obtener la conexión
+            
             
             conn = getConnection();
 
