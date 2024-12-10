@@ -1,0 +1,66 @@
+package JAVA;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+@WebServlet(name = "PersonalServlet", urlPatterns = {"/PersonalServlet"})
+public class PersonalServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        List<Personal> personalList = new ArrayList<>();
+        Connection connection = null;
+
+        try {
+            // Obtener conexión a la base de datos
+            connection = Conexion.getConnection();
+
+            // Consulta SQL para obtener el personal
+            String query = "SELECT id, nombre, apellido, correo, telefono FROM Personal";
+
+            try (PreparedStatement statement = connection.prepareStatement(query);
+                 ResultSet resultSet = statement.executeQuery()) {
+
+                // Recorrer el ResultSet y construir la lista de personal
+                while (resultSet.next()) {
+                    Personal personal = new Personal(
+                        resultSet.getInt("id"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("apellido"),
+                        resultSet.getString("correo"),
+                        resultSet.getString("telefono")
+                    );
+                    personalList.add(personal);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error al consultar el personal: " + e.getMessage());
+        } finally {
+            // Cerrar conexión
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // Enviar la lista de personal al JSP
+        request.setAttribute("personal", personalList);
+        request.getRequestDispatcher("personal.jsp").forward(request, response);
+    }
+}
