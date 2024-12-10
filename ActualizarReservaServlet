@@ -1,0 +1,132 @@
+package JAVA;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+@WebServlet(name = "ActualizarReservaServlet", urlPatterns = {"/ActualizarReservaServlet"})
+public class ActualizarReservaServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Connection con = null;
+
+        try {
+            // Conexión a la base de datos
+            con = Conexion.getConnection();
+            if (con == null) {
+                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+            }
+
+            // Obtener el ID del huésped seleccionado
+            String huespedId = request.getParameter("huespedId");
+
+            // Consulta para obtener los datos del huésped
+            String sql = "SELECT Huespedes.nombre, Huespedes.apellido, " +
+                         "Huespedes.telefono, Habitaciones.tipo, " +
+                         "Reservas.fecha_entrada, Reservas.fecha_salida " +
+                         "FROM Huespedes " +
+                         "JOIN Reservas ON Huespedes.id = Reservas.huesped_id " +
+                         "JOIN Habitaciones ON Reservas.habitacion_id = Habitaciones.id " +
+                         "WHERE Huespedes.id = ?";
+
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setString(1, huespedId);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    // Pasar los datos al formulario como atributos
+                    request.setAttribute("huespedId", huespedId);
+                    request.setAttribute("nombre", rs.getString("nombre"));
+                    request.setAttribute("apellido", rs.getString("apellido"));
+                    request.setAttribute("telefono", rs.getString("telefono"));
+                    request.setAttribute("tipoHabitacion", rs.getString("tipo"));
+                    request.setAttribute("fechaEntrada", rs.getDate("fecha_entrada"));
+                    request.setAttribute("fechaSalida", rs.getDate("fecha_salida"));
+                } else {
+                    throw new SQLException("No se encontraron datos para el huésped seleccionado.");
+                }
+            }
+
+            // Mostrar el formulario en la misma página
+            request.getRequestDispatcher("ActualizarReserva.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error al cargar los datos del huésped: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Connection con = null;
+
+        try {
+            // Conexión a la base de datos
+            con = Conexion.getConnection();
+            if (con == null) {
+                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+            }
+
+            // Obtener parámetros del formulario
+            String huespedId = request.getParameter("huespedId");
+            String nombre = request.getParameter("nombre");
+            String apellido = request.getParameter("apellido");
+            String telefono = request.getParameter("telefono");
+            String tipoHabitacion = request.getParameter("tipoHabitacion");
+            String fechaEntradaStr = request.getParameter("fechaEntrada");
+            String fechaSalidaStr = request.getParameter("fechaSalida");
+
+            // Llamar al procedimiento almacenado para actualizar
+            String callProcedure = "{CALL ActualizarReserva(?, ?, ?, ?, ?, ?, ?)}";
+
+            try (CallableStatement stmt = con.prepareCall(callProcedure)) {
+                stmt.setString(1, huespedId);
+                stmt.setString(2, nombre);
+                stmt.setString(3, apellido);
+                stmt.setString(4, telefono);
+                stmt.setString(5, tipoHabitacion);
+                stmt.setDate(6, java.sql.Date.valueOf(fechaEntradaStr));
+                stmt.setDate(7, java.sql.Date.valueOf(fechaSalidaStr));
+
+                stmt.execute();
+            }
+
+            // Redirigir a una página de éxito
+            response.sendRedirect("index.jsp");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error al actualizar la reservación: " + e.getMessage());
+            request.getRequestDispatcher("ActualizarReserva.jsp").forward(request, response);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
