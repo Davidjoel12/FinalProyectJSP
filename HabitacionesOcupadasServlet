@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,35 +16,49 @@ import java.util.List;
 public class HabitacionesOcupadasServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Habitacion> habitacionesLibres = new ArrayList<>();
+        List<HabitacionOcupada> habitacionesOcupadas = new ArrayList<>();
         Connection connection = null;
 
         try {
             // Obtener la conexión desde la clase Conexion
             connection = Conexion.getConnection();
 
-            String query = "SELECT numero_habitacion, tipo, precio, descripcion " +
-                           "FROM Habitaciones WHERE estado = 'Ocupada'";
+            String query = 
+                "SELECT Huespedes.id AS huesped_id, Huespedes.nombre, Huespedes.apellido, " +
+                "Huespedes.telefono, Habitaciones.numero_habitacion, Habitaciones.tipo, " +
+                "Habitaciones.descripcion, Reservas.fecha_entrada, Reservas.fecha_salida " +
+                "FROM Huespedes " +
+                "JOIN Reservas ON Huespedes.id = Reservas.huesped_id " +
+                "JOIN Habitaciones ON Reservas.habitacion_id = Habitaciones.id " + 
+                "WHERE Habitaciones.estado = 'Ocupada';"; 
+
+
             try (PreparedStatement statement = connection.prepareStatement(query);
                  ResultSet resultSet = statement.executeQuery()) {
 
                 while (resultSet.next()) {
-                    Habitacion habitacion = new Habitacion(
+                    HabitacionOcupada habitacion = new HabitacionOcupada(
+                        resultSet.getInt("huesped_id"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("apellido"),
+                        resultSet.getString("telefono"),
                         resultSet.getString("numero_habitacion"),
                         resultSet.getString("tipo"),
-                        resultSet.getDouble("precio"),
-                        resultSet.getString("descripcion")
+                        resultSet.getString("descripcion"),
+                        resultSet.getDate("fecha_entrada"),
+                        resultSet.getDate("fecha_salida")
+                                
                     );
-                    habitacionesLibres.add(habitacion);
+                    habitacionesOcupadas.add(habitacion);
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error al consultar las habitaciones: " + e.getMessage());
+            request.setAttribute("error", "Error al consultar las habitaciones ocupadas: " + e.getMessage());
         } finally {
             if (connection != null) {
                 try {
@@ -57,9 +69,8 @@ public class HabitacionesOcupadasServlet extends HttpServlet {
             }
         }
 
-        // Enviar la lista de habitaciones al JSP
-        request.setAttribute("habitacionesOcupado", habitacionesLibres);
+        // Enviar la lista de habitaciones ocupadas al JSP
+        request.setAttribute("habitacionesOcupadas", habitacionesOcupadas);
         request.getRequestDispatcher("habitacionesOcupadas.jsp").forward(request, response);
-       
     }
 }
