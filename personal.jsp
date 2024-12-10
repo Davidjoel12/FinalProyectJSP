@@ -1,13 +1,13 @@
+<%@page import="JAVA.Personal"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-<%@ page import="java.util.List" %>
-<%@page import="java.util.*, JAVA.Personal" %>
+<%@page import="java.util.List" %>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Habitaciones Libres</title>
+    <title>Personal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -125,9 +125,14 @@
             transition: background-color 0.3s ease;
         }
 
+        .menu a.active,
+        .menu a:hover {
+            background-color: #34495e;
+        }
     </style>
 </head>
 <body>
+    
     <div class="wrapper">
         <aside class="sidebar">
             <div class="logo">
@@ -137,20 +142,22 @@
             <nav class="menu">
                 <ul>
                     <li><a href="index.jsp">Recepción</a></li>
-                    <li><a href="clientesHospedados.jsp">Clientes</a></li>
+                    <li><a href="HuespedesServlet">Clientes</a></li>
                     <li><a href="#">Reportes</a></li>
                     <li><a href="login.jsp">Salida</a></li>
                 </ul>
             </nav>
         </aside>
         <div class="container">
-            <h1>Habitaciones Libres</h1>
+            <h1 class="text-center">Personal</h1>
 
             <% 
                 String error = (String) request.getAttribute("error");
                 if (error != null) { 
             %>
-                <div style="color: red;"><%= error %></div>
+                <div class="alert alert-danger" role="alert">
+                    <%= error %>
+                </div>
             <% 
                 } 
             %>
@@ -158,41 +165,37 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Número</th>
-                        <th>Tipo</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
+                        <th>Personal ID</th>
+                        <th>Nombre del personal</th>
+                        <th>Correo</th>
+                        <th>Telefono</th>
                     </tr>
                 </thead>
                 <tbody>
                     <%
-                        try {
-                            List<Personal> habitaciones = (List<Personal>) request.getAttribute("habitacionesLibres");
-                            if (habitaciones != null && !habitaciones.isEmpty()) {
-                                for (Personal habitacion : habitaciones) {
+                        List<Personal> personalList = (List<Personal>) request.getAttribute("personal");
+                        if (personalList != null && !personalList.isEmpty()) {
+                            for (Personal person : personalList) {
                     %>
                     <tr>
-                        <td><%= habitacion.getNumeroHabitacion() %></td>
-                        <td><%= habitacion.getTipo() %></td>
-                        <td><%= habitacion.getDescripcion() %></td>
-                        <td><%= habitacion.getPrecio() %></td>
-                    </tr>
-
-                    <%
-                                }
-                            } else {
-                    %>
-                    <tr>
-                        <td colspan="4">No se encontraron habitaciones libres.</td>
+                        <td><%= person.getId()%></td>
+                        <td><%= person.getNombre() %> <%= person.getApellido() %></td>
+                        <td><%= person.getCorreo() %></td>
+                        <td><%= person.getTelefono() %></td>
                     </tr>
                     <%
                             }
-                        } catch (Exception e) {
-                            out.println("<tr><td colspan='4' style='color: red;'>Error al procesar datos: " + e.getMessage() + "</td></tr>");
+                        } else {
+                    %>
+                    <tr>
+                        <td colspan="4" class="text-center">No se encontro personal disponible.</td>
+                    </tr>
+                    <%
                         }
                     %>
                 </tbody>
             </table>
+
             <a href="index.jsp" class="back-button">Volver al Inicio</a>
         </div>
     </div>
