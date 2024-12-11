@@ -1,0 +1,72 @@
+package JAVA;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+@WebServlet(name = "EliminarReservaServlet", urlPatterns = {"/EliminarReservaServlet"})
+public class EliminarReservaServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Connection con = null;
+
+        try {
+            // Obtener el ID del huésped desde el formulario
+            String huespedId = request.getParameter("huespedId");
+
+            if (huespedId == null || huespedId.isEmpty()) {
+                throw new IllegalArgumentException("El ID del huésped no puede estar vacío.");
+            }
+
+            // Establecer la conexión a la base de datos
+            con = Conexion.getConnection();
+            if (con == null) {
+                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+            }
+
+            // Crear la consulta SQL para eliminar la reserva
+            String sql = "DELETE FROM Reservas WHERE huesped_id = ?";
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setString(1, huespedId);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    // Registro eliminado correctamente
+                    request.setAttribute("success", "La reserva del huésped con ID " + huespedId + " fue eliminada correctamente.");
+                } else {
+                    // No se encontró el registro
+                    request.setAttribute("error", "No se encontró ninguna reserva con el ID proporcionado.");
+                }
+            }
+
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", "Parámetro inválido: " + e.getMessage());
+        } catch (SQLException e) {
+            request.setAttribute("error", "Error en la base de datos: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            request.setAttribute("error", "Error inesperado: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    System.err.println("Error al cerrar la conexión: " + e.getMessage());
+                }
+            }
+        }
+
+        // Redirigir al JSP con el mensaje correspondiente
+        request.getRequestDispatcher("index.jsp").forward(request, response);
+    }
+}
