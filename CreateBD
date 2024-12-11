@@ -221,3 +221,68 @@ UPDATE Habitaciones
 SET estado = 'Ocupada'
 WHERE numero_habitacion IN (101, 201, 301, 401, 501);
 
+
+
+
+-- ===========================
+-- PROCEDIMIENTO ALMACENADO
+-- ===========================
+
+CREATE PROCEDURE AgregarHuespedYReserva
+    @nombre NVARCHAR(100),
+    @apellido NVARCHAR(100),
+    @correo NVARCHAR(100) = NULL,
+    @telefono NVARCHAR(15) = NULL,
+    @numero_habitacion NVARCHAR(10),
+    @fecha_entrada DATE,
+    @fecha_salida DATE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Verificar si la habitación está disponible
+        DECLARE @habitacion_id INT, @precio DECIMAL(10, 2);
+        SELECT @habitacion_id = id, @precio = precio
+        FROM Habitaciones
+        WHERE numero_habitacion = @numero_habitacion AND estado = 'Disponible';
+
+        IF @habitacion_id IS NULL
+        BEGIN
+            THROW 50000, 'La habitación no está disponible.', 1;
+        END
+
+        -- Insertar nuevo huésped
+        DECLARE @huesped_id INT;
+        INSERT INTO Huespedes (nombre, apellido, correo, telefono)
+        VALUES (@nombre, @apellido, @correo, @telefono);
+        SET @huesped_id = SCOPE_IDENTITY();
+
+        -- Insertar la reserva
+        INSERT INTO Reservas (huesped_id, habitacion_id, fecha_entrada, fecha_salida)
+        VALUES (@huesped_id, @habitacion_id, @fecha_entrada, @fecha_salida);
+
+        -- Actualizar el estado de la habitación a "Ocupada"
+        UPDATE Habitaciones
+        SET estado = 'Ocupada'
+        WHERE id = @habitacion_id;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+
+EXEC AgregarHuespedYReserva 
+    @nombre = 'Juan',
+    @apellido = 'Pérez',
+    @correo = 'juan.perez@example.com',
+    @telefono = '123456789',
+    @numero_habitacion = '101',
+    @fecha_entrada = '2024-12-10',
+    @fecha_salida = '2024-12-15';
+
+
+
