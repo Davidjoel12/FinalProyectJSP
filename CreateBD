@@ -284,5 +284,53 @@ EXEC AgregarHuespedYReserva
     @fecha_entrada = '2024-12-10',
     @fecha_salida = '2024-12-15';
 
+-=============================-
+---Procedimiento almacenado(Actualizar)--
+--============================--
+CREATE PROCEDURE ActualizarReservacion(
+    @huespedId INT,
+    @nombre NVARCHAR(50),
+    @apellido NVARCHAR(50),
+    @telefono NVARCHAR(15),
+    @tipoHabitacion NVARCHAR(20),
+    @fechaEntrada DATE,
+    @fechaSalida DATE
+)
+AS
+BEGIN
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        -- Actualizar Huespedes
+        UPDATE Huespedes
+        SET nombre = @nombre,
+            apellido = @apellido,
+            telefono = @telefono
+        WHERE id = @huespedId;
+
+        -- Obtener ID de la reserva asociada al huésped
+        DECLARE @habitacionId INT;
+        SELECT @habitacionId = habitacion_id
+        FROM Reservas
+        WHERE huesped_id = @huespedId;
+
+        -- Actualizar Habitaciones
+        UPDATE Habitaciones
+        SET tipo = @tipoHabitacion
+        WHERE id = @habitacionId;
+
+        -- Actualizar Reservas
+        UPDATE Reservas
+        SET fecha_entrada = @fechaEntrada,
+            fecha_salida = @fechaSalida
+        WHERE huesped_id = @huespedId;
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK;
+        THROW;
+    END CATCH
+END;
 
 
