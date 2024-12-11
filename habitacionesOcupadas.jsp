@@ -205,6 +205,13 @@
                                         Actualizar Reserva
                                     </button>
                                 </form>
+                                <form action="EliminarReservaServlet" method="post" style="display: inline-block;" 
+                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta reserva?');">
+                                    <input type="hidden" name="huespedId" value="<%= habitacion.getHuespedId() %>" />
+                                    <button type="submit" style="background-color: #d9534f; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+                                        Eliminar Reserva
+                                    </button>
+                                </form>
 
                             </td>
                         </tr>
